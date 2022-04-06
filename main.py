@@ -20,8 +20,13 @@ def get_links(items):
 
 def get_book_information(url, links):
     for link in links:
-        sp = download_html(url + links)
-        books_prices = sp.find_all("div", class_="col col-8")
+        print(url + link)
+        sp = download_html(url + link)
+       
+        books_info = sp.find_all("div", class_="product-info")
+        for book in books_info:
+            name = book.find_all("h1", class_="text-h4 mb-2")
+            print(name[0].text.strip())
 
 url = "https://www.casadellibro.com/libro-y-pelicula"
 data = []
@@ -47,9 +52,10 @@ print("Items encontrados: " + str(len(items)))
 links = get_links(items)
 
 
-for l in links:
-    sp = download_html(url + l)
-    print(sp)
+#for l in links:
+    #sp = download_html("https://www.casadellibro.com/" + l)
+get_book_information("https://www.casadellibro.com/", links)
+
 
 
 
