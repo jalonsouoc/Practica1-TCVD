@@ -82,7 +82,6 @@ def get_prediccion_municipio(url):
     comunes = bs_municipio.find_all("td", class_="alinear_texto_centro no_wrap comunes")
     min_max = comunes[0]
     sensacion_min_max = comunes[7]
-    print(min_max)
     minimo = min_max.find_all("span", class_="texto_azul")[0].text.strip()
     maximo  = min_max.find_all("span", class_="texto_rojo")[0].text.strip()
     print("Temperatura mínima:" + minimo)
@@ -100,6 +99,18 @@ def get_prediccion_municipio(url):
 
     print("Humedad mínima:" + humedad_min)
     print("Humedad máxima:" + humedad_max)
+
+    #Obtenemos el viento y la dirección 
+    direccion = bs_municipio.find_all("div", class_="texto_viento")[0].text.strip()
+    velocidad = bs_municipio.find_all("div", class_="texto_km_viento")[0].text.strip()
+
+    print("Dirección del viento:" + direccion)
+    print("Velocidad del viento:" + velocidad)
+
+    #Obtenemos la sensación térmica
+    sensacion = bs_municipio.find_all("td", class_="no_wrap nocomunes")[0].text.strip()
+    print("Sensación térmica:" + sensacion)
+
 
 
 for municipio in dataMunicipios:
