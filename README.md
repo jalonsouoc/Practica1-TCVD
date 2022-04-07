@@ -13,7 +13,7 @@ Este proyecto es parte de una Práctica de la asignatura Tipología y ciclo de v
 
 * main.py. Inicia y realiza todo el proceso de *scraping*.
 * Respuestas.pdf. Archivo PDF donde se responde a las preguntas de la práctica.
-* .csv. El dataset generado.
+* eltiempo.csv. El dataset generado.
 
 
 
