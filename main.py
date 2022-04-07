@@ -68,6 +68,40 @@ def get_prediccion_municipio(url):
     hora = bs_municipio.find_all("div", class_="fuente09em")[0].text.strip()
     print(hora)
 
+    #Obtenemos el tiempo
+    tiempo_div = bs_municipio.find_all("div", class_="width47px margen_auto_horizontal")
+    tiempo = tiempo_div[0].find("img").get('title')
+    print(tiempo)
+
+    #Obtenemos los grados
+    temperatura = bs_municipio.find_all("div", class_="no_wrap")[0].text.strip()
+    print(temperatura)
+
+    # Obtenemos la temperatura mínima y máxima y la sensación térmica
+    
+    comunes = bs_municipio.find_all("td", class_="alinear_texto_centro no_wrap comunes")
+    min_max = comunes[0]
+    sensacion_min_max = comunes[7]
+    print(min_max)
+    minimo = min_max.find_all("span", class_="texto_azul")[0].text.strip()
+    maximo  = min_max.find_all("span", class_="texto_rojo")[0].text.strip()
+    print("Temperatura mínima:" + minimo)
+    print("Temperatura máxima:" + maximo)
+    sensacion_minima = sensacion_min_max.find_all("span", class_="texto_azul")[0].text.strip()
+    sensacion_maxima  = sensacion_min_max.find_all("span", class_="texto_rojo")[0].text.strip()
+    print("Sensación mínima:" + sensacion_minima)
+    print("Sensación máxima:" + sensacion_maxima)
+
+
+    #Obtenemos la humedad
+    humedad_min_max = bs_municipio.find_all("td", class_="alinear_texto_centro comunes")[0]
+    humedad_min = humedad_min_max.find_all("span", class_="texto_marron")[0].text.strip()
+    humedad_max = humedad_min_max.find_all("span", class_="texto_verde")[0].text.strip()
+
+    print("Humedad mínima:" + humedad_min)
+    print("Humedad máxima:" + humedad_max)
+
+
 for municipio in dataMunicipios:
     print(municipio[0])
     url_municipio = "http://www.aemet.es/es/eltiempo/prediccion/municipios/" + municipio[1]
