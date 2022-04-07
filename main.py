@@ -111,7 +111,16 @@ def get_prediccion_municipio(url):
     sensacion = bs_municipio.find_all("td", class_="no_wrap nocomunes")[0].text.strip()
     print("Sensación térmica:" + sensacion)
 
+    #Precipitación y cota de nieve
+    precipitacion = bs_municipio.find_all("td", class_="nocomunes")[0].text.strip()
+    nieve = bs_municipio.find_all("td", class_="nocomunes")[13].text.strip()
+    print("Porcentaje precipitación:" + precipitacion)
+    print("Cota de nieve:" + nieve)
 
+    #Obtenemos el indice iuv
+    #iuv_td = bs_municipio.find_all("span", class_="raduv_pred_nivel3")
+    #iuv = iuv_td.find_all("span", class_="raduv_pred_nivel3")[0].text.strip()
+    #print(iuv_td)
 
 for municipio in dataMunicipios:
     print(municipio[0])
