@@ -1,6 +1,8 @@
 import urllib3
 import builtwith
 from bs4 import BeautifulSoup
+import csv
+from DiaHoraMunicipio import DiaHoraMunicipio
 
 def download_html(url):
     http = urllib3.PoolManager()
@@ -31,12 +33,17 @@ def get_municipios(url):
 
 #Obtenemos los datos de los municipios por provincia
 def get_datos_provincia(dataMunicipios):
+    data = []
     for municipio in dataMunicipios:
-        get_prediccion_municipio(url + "/" + municipio[1])
+        urlMunicipio = url + "/" + municipio[1] + "#detallada"
+        data.append(get_prediccion_municipio(urlMunicipio, municipio))
+        print("Número de datos obtenidos" + str(len(data)))
  
 
 
-def get_prediccion_municipio(url):
+def get_prediccion_municipio(url, municipio):
+    datosMunicipio = []
+    datosMunicipio.append(municipio[0])
     bs_municipio = download_html(url)
     #Obtenemos la fecha
     fecha = bs_municipio.find_all("th", class_="borde_izq_dcha_fecha")[0].text.strip()
@@ -95,12 +102,22 @@ def get_prediccion_municipio(url):
     print("Porcentaje precipitación:" + precipitacion)
     print("Cota de nieve:" + nieve)
 
+    return DiaHoraMunicipio(datosMunicipio)
+    
     #Obtenemos el indice iuv
     #iuv_td = bs_municipio.find_all("span", class_="raduv_pred_nivel3")
     #iuv = iuv_td.find_all("span", class_="raduv_pred_nivel3")[0].text.strip()
     #print(iuv_td)
 
+    
 
+    def write_csv(filename):
+        with open(filename, "w") as file:
+            writer = csv.writer(file, delimiter=",")
+            writer.writerow(["Municipio"])
+            for diaHora in data:
+                writer.writerow(list(municipio))
+ 
 url = "http://www.aemet.es/es/eltiempo/prediccion/municipios"
 data = []
 dataset_file = "dataset.csv"
