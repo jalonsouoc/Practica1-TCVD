@@ -81,7 +81,13 @@ def get_prediccion_municipio(url, municipio, provincia):
 
     #Obtenemos la temperatura  y la sensación térmica mínima y máxima
     min_max_div = bs_municipio.find_all("td", class_="alinear_texto_centro no_wrap comunes")
-    
+
+    #Obtenemos la humedad máxima y mínima
+    humedad_min_max_div = bs_municipio.find_all("td", class_="alinear_texto_centro comunes")
+
+    #Obtenemos el viento y la dirección 
+    dir_viento_div = bs_municipio.find_all("div", class_="texto_viento")
+    vel_viento_div = bs_municipio.find_all("div", class_="texto_km_viento")
 
 
     for i in range(nHoras):
@@ -117,13 +123,19 @@ def get_prediccion_municipio(url, municipio, provincia):
         temp_min = min_max_div[indiceFechaActual].find_all("span", class_="texto_azul")[0].text.strip()
         temp_max = min_max_div[indiceFechaActual].find_all("span", class_="texto_rojo")[0].text.strip()
 
-        #Obtenemos la sensación térmica
+        #Obtenemos la sensación térmica mínim ay máxima
         sens_min = min_max_div[indiceFechaActual + nFechas].find_all("span", class_="texto_azul")[0].text.strip()
         sens_max  = min_max_div[indiceFechaActual + nFechas].find_all("span", class_="texto_rojo")[0].text.strip()
 
+        #Obtenemos la humedad mínima y máxima
+        humedad_min = humedad_min_max_div[indiceFechaActual].find_all("span", class_="texto_marron")[0].text.strip()
+        humedad_max = humedad_min_max_div[indiceFechaActual].find_all("span", class_="texto_verde")[0].text.strip()
 
+        #Obtenemos el viento y la dirección 
+        dir_viento = dir_viento_div[i].text.strip()
+        vel_viento = vel_viento_div[i].text.strip()
 
-        diaHora = DiaHoraMunicipio(municipio, provincia, fecha, hora, tiempo, temperatura, precipitacion, nieve, temp_min, temp_max, sens_min, sens_max)
+        diaHora = DiaHoraMunicipio(municipio, provincia, fecha, hora, tiempo, temperatura, precipitacion, nieve, temp_min, temp_max, sens_min, sens_max, humedad_min, humedad_max, dir_viento, vel_viento)
         
         datosMunicipio.append(diaHora)
 
@@ -182,16 +194,6 @@ print("Proceso terminado")
 
 """      # Obtenemos la temperatura mínima y máxima y la sensación térmica
         
-
-
-        #Obtenemos la humedad
-        humedad_min_max = bs_municipio.find_all("td", class_="alinear_texto_centro comunes")[0]
-        humedad_min = humedad_min_max.find_all("span", class_="texto_marron")[0].text.strip()
-        humedad_max = humedad_min_max.find_all("span", class_="texto_verde")[0].text.strip()
-
-        print("Humedad mínima:" + humedad_min)
-        print("Humedad máxima:" + humedad_max)
-
         #Obtenemos el viento y la dirección 
         direccion = bs_municipio.find_all("div", class_="texto_viento")[0].text.strip()
         velocidad = bs_municipio.find_all("div", class_="texto_km_viento")[0].text.strip()
