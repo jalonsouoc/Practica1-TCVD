@@ -6,6 +6,7 @@ import bs4
 import csv
 from DiaHoraMunicipio import DiaHoraMunicipio
 
+#Método encargado de descargarse las webs
 def download_html(url):
     http = urllib3.PoolManager()
     response = http.request('GET', url)
@@ -16,9 +17,8 @@ def download_html(url):
 def get_provincias(url):
     municipiosProvincia = []
     datosProvincia = []
-    for  i in range(1,3): # for  i in range(1, 51):
-        print(url + "?p=" + str(i) + "&w=t")
-        municipiosProvincia = get_municipios(url + "?p=" + str(i) + "&w=t", "Nombre provincia")
+    for  i in range(1,5): # for  i in range(1, 51):
+        municipiosProvincia = get_municipios(url + "?p=" + str(i) + "&w=t")
         prov = get_datos_provincia(municipiosProvincia) # Obtener la provincia y pasarla
         for dato in prov:
             datosProvincia.append(dato)
@@ -29,10 +29,15 @@ def get_provincias(url):
 
 
 # Obtenemos el nombre y la url de cada provincia
-def get_municipios(url, provincia):
+def get_municipios(url):
     soup = download_html(url)
+    prvoincia_h2 = soup.find_all("h2", class_="titulo")[0].text.strip()
+    provincia = prvoincia_h2.split(".", 2)[1].strip()
     items = soup.find_all("td")
-    print("Municipios encontrados: " + str(len(items)))
+    print(provincia)
+    print("Municipios: " + str(len(items)))
+    print("URL: " + url)
+    
     dataMunicipios = []
     for item in items:
         municipio = item.find_all("a", href=True)
@@ -74,10 +79,11 @@ def get_prediccion_municipio(url, municipio, provincia):
     temperatura_div = bs_municipio.find_all("div", class_="no_wrap")
 
     #Obtenenmos la probabilidad de precipitación y cota de nieve
-    div_precip_nive = bs_municipio.find_all("td", class_="nocomunes")
+    div_nocomunes = bs_municipio.find_all("td", class_="nocomunes")
 
-    precipitacion_div = div_precip_nive[0:nHoras]
-    nieve_div = div_precip_nive[nHoras:nHoras*2]
+    precipitacion_div = div_nocomunes[0:nHoras]
+    nieve_div = div_nocomunes[nHoras:nHoras*2]
+    racha_max_div = div_nocomunes[nHoras*3:nHoras*4]
 
     #Obtenemos la temperatura  y la sensación térmica mínima y máxima
     min_max_div = bs_municipio.find_all("td", class_="alinear_texto_centro no_wrap comunes")
@@ -119,6 +125,9 @@ def get_prediccion_municipio(url, municipio, provincia):
         #Obtenenmos  la cota de nieve
         nieve = nieve_div[i].text.strip()
 
+        #Obtenemos la racha máxima de viento
+        racha_max = racha_max_div[i].text.strip()
+
         #Obtenemos la temperatura mínima y máxima
         temp_min = min_max_div[indiceFechaActual].find_all("span", class_="texto_azul")[0].text.strip()
         temp_max = min_max_div[indiceFechaActual].find_all("span", class_="texto_rojo")[0].text.strip()
@@ -135,7 +144,7 @@ def get_prediccion_municipio(url, municipio, provincia):
         dir_viento = dir_viento_div[i].text.strip()
         vel_viento = vel_viento_div[i].text.strip()
 
-        diaHora = DiaHoraMunicipio(municipio, provincia, fecha, hora, tiempo, temperatura, precipitacion, nieve, temp_min, temp_max, sens_min, sens_max, humedad_min, humedad_max, dir_viento, vel_viento)
+        diaHora = DiaHoraMunicipio(municipio, provincia, fecha, hora, tiempo, temperatura, precipitacion, nieve, temp_min, temp_max, sens_min, sens_max, humedad_min, humedad_max, dir_viento, vel_viento, racha_max)
         
         datosMunicipio.append(diaHora)
 
@@ -169,41 +178,3 @@ print("Datos obtenidos")
 write_csv(dataset_file, data)
 
 print("Proceso terminado")
-
-
-
-
-
-
-    #print(sp)
-    
-#links = get_links(items)
-
-
-#for l in links:
-    #sp = download_html("https://www.casadellibro.com/" + l)
-#get_book_information("https://www.casadellibro.com/", links)
-
-
-
-
-
-#file = open("libros.html", "w", encoding='utf-8')
-#file.write(str(soup))
-
-
-"""      # Obtenemos la temperatura mínima y máxima y la sensación térmica
-        
-        #Obtenemos el viento y la dirección 
-        direccion = bs_municipio.find_all("div", class_="texto_viento")[0].text.strip()
-        velocidad = bs_municipio.find_all("div", class_="texto_km_viento")[0].text.strip()
-
-        print("Dirección del viento:" + direccion)
-        print("Velocidad del viento:" + velocidad)
-
-        #Obtenemos la sensación térmica
-        sensacion = bs_municipio.find_all("td", class_="no_wrap nocomunes")[0].text.strip()
-        print("Sensación térmica:" + sensacion)
-
-
-"""
