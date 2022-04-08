@@ -1,12 +1,13 @@
 
 
 class DiaHoraMunicipio():
-    def __init__(self, datos):
-        self.municipio = datos[0]
-"""         dia = datos[1]
-        rangoHoras = datos[2]
-        tiempo = datos[3]
-        temperatura = datos[4]
+    def __init__(self, municipio, provincia, dia, rangoHoras, tiempo):
+        self.municipio = municipio
+        self.provincia = provincia
+        self.dia = dia
+        self.rangoHoras = rangoHoras
+        self.tiempo = tiempo
+        """temperatura = datos[4]
         probPrecipitacion = datos[5]
         cotaNieve = datos[6]
         tempMin = datos[7]
