@@ -16,7 +16,7 @@ def download_html(url):
 def get_provincias(url):
     municipiosProvincia = []
     datosProvincia = []
-    for  i in range(1,2): # for  i in range(1, 51):
+    for  i in range(1,3): # for  i in range(1, 51):
         print(url + "?p=" + str(i) + "&w=t")
         municipiosProvincia = get_municipios(url + "?p=" + str(i) + "&w=t", "Nombre provincia")
         prov = get_datos_provincia(municipiosProvincia) # Obtener la provincia y pasarla
@@ -73,6 +73,17 @@ def get_prediccion_municipio(url, municipio, provincia):
     #Obtenemos todas las temperaturas 
     temperatura_div = bs_municipio.find_all("div", class_="no_wrap")
 
+    #Obtenenmos la probabilidad de precipitación y cota de nieve
+    div_precip_nive = bs_municipio.find_all("td", class_="nocomunes")
+
+    precipitacion_div = div_precip_nive[0:nHoras]
+    nieve_div = div_precip_nive[nHoras:nHoras*2]
+
+    #Obtenemos la temperatura  y la sensación térmica mínima y máxima
+    min_max_div = bs_municipio.find_all("td", class_="alinear_texto_centro no_wrap comunes")
+    
+
+
     for i in range(nHoras):
         fecha = fechas[indiceFechaActual].text.strip()
 
@@ -82,8 +93,6 @@ def get_prediccion_municipio(url, municipio, provincia):
         else:
             hora = " "
 
-        if "24" in hora or " " in hora:
-            indiceFechaActual = indiceFechaActual+1
 
         #Obtenemos el tiempo del día y la fecha
         if i <  len(tiempo_div):
@@ -94,15 +103,33 @@ def get_prediccion_municipio(url, municipio, provincia):
 
         #Obtenemos la temperatura
         if i < len(temperatura_div):
-            temperatura = bs_municipio.find_all("div", class_="no_wrap")[i].text.strip()
+            temperatura = temperatura_div[i].text.strip()
         else:
             temperatura = " "
 
-       
+        #Obtenemos la probabilidad de precipitación
+        precipitacion = precipitacion_div[i].text.strip()
 
-        diaHora = DiaHoraMunicipio(municipio, provincia, fecha, hora, tiempo, temperatura)
+        #Obtenenmos  la cota de nieve
+        nieve = nieve_div[i].text.strip()
+
+        #Obtenemos la temperatura mínima y máxima
+        temp_min = min_max_div[indiceFechaActual].find_all("span", class_="texto_azul")[0].text.strip()
+        temp_max = min_max_div[indiceFechaActual].find_all("span", class_="texto_rojo")[0].text.strip()
+
+        #Obtenemos la sensación térmica
+        sens_min = min_max_div[indiceFechaActual + nFechas].find_all("span", class_="texto_azul")[0].text.strip()
+        sens_max  = min_max_div[indiceFechaActual + nFechas].find_all("span", class_="texto_rojo")[0].text.strip()
+
+
+
+        diaHora = DiaHoraMunicipio(municipio, provincia, fecha, hora, tiempo, temperatura, precipitacion, nieve, temp_min, temp_max, sens_min, sens_max)
         
         datosMunicipio.append(diaHora)
+
+                #Situar al final
+        if "24" in hora or " " in hora:
+            indiceFechaActual = indiceFechaActual+1
 
     return datosMunicipio
 
@@ -120,16 +147,16 @@ url = "http://www.aemet.es/es/eltiempo/prediccion/municipios"
 dataset_file = "dataset.csv"
 
 
-#print(builtwith.builtwith(url))
 
-# Descargamos la página web
-
-print("Iniciamos la descarga de la web")
-
+print("Inicio del proceso")
 #Realizamos la descarga incial de la web
 data = get_provincias(url)
 
+print("Datos obtenidos")
+
 write_csv(dataset_file, data)
+
+print("Proceso terminado")
 
 
 
@@ -155,17 +182,6 @@ write_csv(dataset_file, data)
 
 """      # Obtenemos la temperatura mínima y máxima y la sensación térmica
         
-        comunes = bs_municipio.find_all("td", class_="alinear_texto_centro no_wrap comunes")
-        min_max = comunes[0]
-        sensacion_min_max = comunes[7]
-        minimo = min_max.find_all("span", class_="texto_azul")[0].text.strip()
-        maximo  = min_max.find_all("span", class_="texto_rojo")[0].text.strip()
-        print("Temperatura mínima:" + minimo)
-        print("Temperatura máxima:" + maximo)
-        sensacion_minima = sensacion_min_max.find_all("span", class_="texto_azul")[0].text.strip()
-        sensacion_maxima  = sensacion_min_max.find_all("span", class_="texto_rojo")[0].text.strip()
-        print("Sensación mínima:" + sensacion_minima)
-        print("Sensación máxima:" + sensacion_maxima)
 
 
         #Obtenemos la humedad
@@ -187,9 +203,5 @@ write_csv(dataset_file, data)
         sensacion = bs_municipio.find_all("td", class_="no_wrap nocomunes")[0].text.strip()
         print("Sensación térmica:" + sensacion)
 
-        #Precipitación y cota de nieve
-        precipitacion = bs_municipio.find_all("td", class_="nocomunes")[0].text.strip()
-        nieve = bs_municipio.find_all("td", class_="nocomunes")[13].text.strip()
-        print("Porcentaje precipitación:" + precipitacion)
-        print("Cota de nieve:" + nieve)
+
 """
