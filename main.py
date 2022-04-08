@@ -1,3 +1,4 @@
+from asyncore import write
 import urllib3
 import builtwith
 from bs4 import BeautifulSoup
@@ -14,11 +15,16 @@ def download_html(url):
 # Recorremos las provincias españolas
 def get_provincias(url):
     municipiosProvincia = []
-    for  i in range(1, 51):
+    datosProvincia = []
+    for  i in range(1,2): # for  i in range(1, 51):
         print(url + "?p=" + str(i) + "&w=t")
         municipiosProvincia = get_municipios(url + "?p=" + str(i) + "&w=t", "Nombre provincia")
-        get_datos_provincia(municipiosProvincia) # Obtener la provincia y pasarla
-
+        prov = get_datos_provincia(municipiosProvincia) # Obtener la provincia y pasarla
+        for dato in prov:
+            datosProvincia.append(dato)
+        
+        
+    return datosProvincia
     #Añadir a ceuta y melilla
 
 
@@ -40,9 +46,11 @@ def get_datos_provincia(dataMunicipios):
     data = []
     for municipio in dataMunicipios:
         urlMunicipio = url + "/" + municipio[2] + "#detallada"
-        mun = get_prediccion_municipio(urlMunicipio, municipio[0], municipio[1])
-        data.append(mun)
-        print("Número de datos obtenidos" + str(len(data)))
+        predicciones = get_prediccion_municipio(urlMunicipio, municipio[0], municipio[1])
+        for pred in predicciones:
+            data.append(pred)
+        
+    return data
  
 
 
@@ -59,9 +67,11 @@ def get_prediccion_municipio(url, municipio, provincia):
     # Cantidad de horas de la ventana
     nHoras = len(bs_municipio.find_all("th", class_="borde_izq_dcha_estado_cielo no_wrap"))
 
-    # CUmplimentamos las horas para tener el control de la cantidad de registros
-    """     while nHoras != len(horas):
-        horas.append(bs4.element.ResultSet("")) """
+    #Obtenemos todos los tiempos de los días
+    tiempo_div = bs_municipio.find_all("div", class_="width47px margen_auto_horizontal")
+
+    #Obtenemos todas las temperaturas 
+    temperatura_div = bs_municipio.find_all("div", class_="no_wrap")
 
     for i in range(nHoras):
         fecha = fechas[indiceFechaActual].text.strip()
@@ -71,36 +81,79 @@ def get_prediccion_municipio(url, municipio, provincia):
             hora = horas[i].text.strip()
         else:
             hora = " "
-            
-        #Obtenemos la fecha
+
         if "24" in hora or " " in hora:
             indiceFechaActual = indiceFechaActual+1
 
+        #Obtenemos el tiempo del día y la fecha
+        if i <  len(tiempo_div):
+            tiempo = tiempo_div[i].find("img").get('title')
+        else:
+            tiempo = " "
+        
+
         #Obtenemos la temperatura
-        tiempo_div = bs_municipio.find_all("div", class_="width47px margen_auto_horizontal")
-        tiempo = tiempo_div[i].find("img").get('title')
-        print(tiempo)
+        if i < len(temperatura_div):
+            temperatura = bs_municipio.find_all("div", class_="no_wrap")[i].text.strip()
+        else:
+            temperatura = " "
 
+       
 
-        diaHora = DiaHoraMunicipio(municipio, provincia, fecha, hora, tiempo)
+        diaHora = DiaHoraMunicipio(municipio, provincia, fecha, hora, tiempo, temperatura)
         
         datosMunicipio.append(diaHora)
 
+    return datosMunicipio
 
-        """ #Obtenemos las horas
-        hora = bs_municipio.find_all("div", class_="fuente09em")[0].text.strip()
-        print(hora)
 
-        #Obtenemos el tiempo
-        tiempo_div = bs_municipio.find_all("div", class_="width47px margen_auto_horizontal")
-        tiempo = tiempo_div[0].find("img").get('title')
-        print(tiempo)
+def write_csv(filename, data):
+    file = open(filename, "w+")
+    for i in range(len(data)):
+        for item in data[i]:
+            file.write(item + ";")
+        file.write("\n")
+    
+ 
 
-        #Obtenemos los grados
-        temperatura = bs_municipio.find_all("div", class_="no_wrap")[0].text.strip()
-        print(temperatura)
+url = "http://www.aemet.es/es/eltiempo/prediccion/municipios"
+dataset_file = "dataset.csv"
 
-        # Obtenemos la temperatura mínima y máxima y la sensación térmica
+
+#print(builtwith.builtwith(url))
+
+# Descargamos la página web
+
+print("Iniciamos la descarga de la web")
+
+#Realizamos la descarga incial de la web
+data = get_provincias(url)
+
+write_csv(dataset_file, data)
+
+
+
+
+
+
+    #print(sp)
+    
+#links = get_links(items)
+
+
+#for l in links:
+    #sp = download_html("https://www.casadellibro.com/" + l)
+#get_book_information("https://www.casadellibro.com/", links)
+
+
+
+
+
+#file = open("libros.html", "w", encoding='utf-8')
+#file.write(str(soup))
+
+
+"""      # Obtenemos la temperatura mínima y máxima y la sensación térmica
         
         comunes = bs_municipio.find_all("td", class_="alinear_texto_centro no_wrap comunes")
         min_max = comunes[0]
@@ -139,53 +192,4 @@ def get_prediccion_municipio(url, municipio, provincia):
         nieve = bs_municipio.find_all("td", class_="nocomunes")[13].text.strip()
         print("Porcentaje precipitación:" + precipitacion)
         print("Cota de nieve:" + nieve)
- """
-
-
-    #Obtenemos el indice iuv
-    #iuv_td = bs_municipio.find_all("span", class_="raduv_pred_nivel3")
-    #iuv = iuv_td.find_all("span", class_="raduv_pred_nivel3")[0].text.strip()
-    #print(iuv_td)
-
-    
-
-    def write_csv(filename):
-        with open(filename, "w") as file:
-            writer = csv.writer(file, delimiter=",")
-            writer.writerow(["Municipio"])
-            #for diaHora in data:
-            #    writer.writerow(list(municipio))
- 
-url = "http://www.aemet.es/es/eltiempo/prediccion/municipios"
-dataset_file = "dataset.csv"
-
-
-#print(builtwith.builtwith(url))
-
-# Descargamos la página web
-
-print("Iniciamos la descarga de la web")
-
-#Realizamos la descarga incial de la web
-get_provincias(url)
-
-
-
-
-
-
-    #print(sp)
-    
-#links = get_links(items)
-
-
-#for l in links:
-    #sp = download_html("https://www.casadellibro.com/" + l)
-#get_book_information("https://www.casadellibro.com/", links)
-
-
-
-
-
-#file = open("libros.html", "w", encoding='utf-8')
-#file.write(str(soup))
+"""
