@@ -8,55 +8,33 @@ def download_html(url):
     soup = BeautifulSoup(response.data, "lxml")
     return soup
 
-def get_links(items):
-    links = []
-    # Obtenemos las tarjetas de cada libro
+# Recorremos las provincias españolas
+def get_provincias(url):
+    municipiosProvincia = []
+    for  i in range(1, 53):
+        print(url + "?p=" + str(i) + "&w=t")
+        municipiosProvincia = get_municipios(url + "?p=" + str(i) + "&w=t")
+        get_datos_provincia(municipiosProvincia)
+
+
+# Obtenemos los municipios de cada provincia
+def get_municipios(url):
+    soup = download_html(url)
+    items = soup.find_all("td")
+    print("Municipios encontrados: " + str(len(items)))
+    dataMunicipios = []
     for item in items:
-        itemLink = item.find_all("a", href=True, class_="d-flex v-card v-card--flat v-card--link v-sheet theme--light rounded-0")
-        #Obtenemos los enlaces de cada tarjeta
-        links.append(itemLink[0]['href'])
-        
-    return links
+        municipio = item.find_all("a", href=True)
+        urlMunicipio = municipio[0]['href'].split('/')
+        dataMunicipios.append([municipio[0].text.strip(), urlMunicipio[len(urlMunicipio) - 1]])
+        return dataMunicipios
 
-def get_book_information(url, links):
-    books = []
-    for link in links:
-        print(url + link)
-        sp = download_html(url + link)
-       
-        books_info = sp.find_all("div", class_="product-info")
-        for book in books_info:
-            name = book.find_all("h1", class_="text-h4 mb-2")
-            print(name[0].text.strip())
-            books.append({name})
-
-
-
-
-url = "http://www.aemet.es/es/eltiempo/prediccion/municipios?p=38&w=t"
-data = []
-dataset_file = "dataset.csv"
-
-#print(builtwith.builtwith(url))
-
-# Descargamos la página web
-
-print("Iniciamos la descarga de la web")
-
-#Realizamos la descarga incial de la web
-soup = download_html(url)
-
-
-items = soup.find_all("td")
-
-
-print("Items encontrados: " + str(len(items)))
-dataMunicipios = []
-for item in items:
-    municipio = item.find_all("a", href=True)
-    urlMunicipio = municipio[0]['href'].split('/')
-    dataMunicipios.append([municipio[0].text.strip(), urlMunicipio[len(urlMunicipio) - 1]])
+#Obtenemos los datos de los municipios por provincia
+def get_datos_provincia(dataMunicipios):
+    for municipio in dataMunicipios:
+        get_prediccion_municipio(url + "/" + municipio[1])
  
+
 
 def get_prediccion_municipio(url):
     bs_municipio = download_html(url)
@@ -122,10 +100,20 @@ def get_prediccion_municipio(url):
     #iuv = iuv_td.find_all("span", class_="raduv_pred_nivel3")[0].text.strip()
     #print(iuv_td)
 
-for municipio in dataMunicipios:
-    print(municipio[0])
-    url_municipio = "http://www.aemet.es/es/eltiempo/prediccion/municipios/" + municipio[1]
-    get_prediccion_municipio(url_municipio)
+
+url = "http://www.aemet.es/es/eltiempo/prediccion/municipios"
+data = []
+dataset_file = "dataset.csv"
+
+
+#print(builtwith.builtwith(url))
+
+# Descargamos la página web
+
+print("Iniciamos la descarga de la web")
+
+#Realizamos la descarga incial de la web
+get_provincias(url)
 
 
 
