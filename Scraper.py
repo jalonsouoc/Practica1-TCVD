@@ -165,7 +165,7 @@ class Scraper():
             temp_min = min_max_div[indiceFechaActual].find_all("span", class_="texto_azul")[0].text.strip()
             temp_max = min_max_div[indiceFechaActual].find_all("span", class_="texto_rojo")[0].text.strip()
 
-            #Obtenemos la sensación térmica mínim ay máxima
+            #Obtenemos la sensación térmica mínima y máxima
             sens_min = min_max_div[indiceFechaActual + nFechas].find_all("span", class_="texto_azul")[0].text.strip()
             sens_max  = min_max_div[indiceFechaActual + nFechas].find_all("span", class_="texto_rojo")[0].text.strip()
 
