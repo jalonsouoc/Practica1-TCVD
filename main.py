@@ -8,12 +8,16 @@ data = []
 scraper = Scraper(url)
 
 print("Inicio del proceso")
-#Realizamos la descarga incial de la web
+print("Inicio del proceso de obtención de datos")
+
 data = scraper.get_provincias(url)
 
 print("Datos obtenidos")
-print("Escribiendo los datos en el fichero")
+print("Finalizado el proceso de obtención de datos")
+
+print("Inicio de la escritura del fichero")
 
 scraper.write_csv(dataset_file, data)
 
+print("Finalizada la escritura del fichero")
 print("Proceso terminado")

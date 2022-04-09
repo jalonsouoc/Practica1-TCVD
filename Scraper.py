@@ -1,4 +1,3 @@
-from asyncore import write
 import urllib3
 from bs4 import BeautifulSoup
 import time
@@ -18,18 +17,18 @@ class Scraper():
         soup = BeautifulSoup(response.data, "lxml")
         return soup
 
-    # Recorremos las provincias españolas
+    # Método que recorre las provincias españolas obteniendo los datos de cada provincia
     def get_provincias(self,url):
         municipiosProvincia = []
         datosProvincia = []
-        for  i in range(1,2): # for  i in range(1, 51):
+        for  i in range(1, 51):
             urlProvincia = url + "?p=" + str(i) + "&w=t"
             municipiosProvincia = self.get_municipios(urlProvincia)
-            prov = self.get_datos_provincia(municipiosProvincia) # Obtener la provincia y pasarla
+            prov = self.get_datos_provincia(municipiosProvincia)
             for dato in prov:
                 datosProvincia.append(dato)
             
-        
+        # Para las ciudades autónomas al no tener provincias se recorren como un municipio más
         for j in range(51, 53):
             urlProvincia = url + "?p=" + str(j) + "&w=t"
             start_time = time.time()
@@ -44,7 +43,7 @@ class Scraper():
         return datosProvincia
 
 
-    # Obtenemos el nombre y la url de cada provincia
+    # Método que obtiene los municipios de cada provincia y su url
     def get_municipios(self,url):
         soup = self.download_html(url)
         prvoincia_h2 = soup.find_all("h2", class_="titulo")[0].text.strip()
@@ -62,6 +61,7 @@ class Scraper():
             
         return dataMunicipios
 
+    # Método que obtiene los datos de la ciudades autónomas
     def get_ciudad_autonoma(self,url):
         soup = self.download_html(url)
         prvoincia_h2 = soup.find_all("h2", class_="titulo")[0].text.strip()
@@ -74,7 +74,7 @@ class Scraper():
         return datosCiudad
         
 
-    #Obtenemos los datos de los municipios por provincia
+    #Método que obtiene las predicciones de todos los municipios de una provincia
     def get_datos_provincia(self, dataMunicipios):
         data = []
         start_time = time.time()
@@ -91,7 +91,7 @@ class Scraper():
         return data
     
 
-
+    # Método que obtiene los datos de cada municipio que se le pasa como parámetro
     def get_prediccion_municipio(self, url, municipio, provincia):
 
         datosMunicipio = []
@@ -181,7 +181,7 @@ class Scraper():
             
             datosMunicipio.append(diaHora)
 
-                    #Situar al final
+            # LLeva el control del día en el que estamos, si la últim ahora contiene 24 h ó está vacío significa que el día ha terminado
             if "24" in hora or " " in hora:
                 indiceFechaActual = indiceFechaActual+1
 
