@@ -17,15 +17,21 @@ def download_html(url):
 def get_provincias(url):
     municipiosProvincia = []
     datosProvincia = []
-    for  i in range(1,5): # for  i in range(1, 51):
-        municipiosProvincia = get_municipios(url + "?p=" + str(i) + "&w=t")
+    for  i in range(1,2): # for  i in range(1, 51):
+        urlProvincia = url + "?p=" + str(i) + "&w=t"
+        municipiosProvincia = get_municipios(urlProvincia)
         prov = get_datos_provincia(municipiosProvincia) # Obtener la provincia y pasarla
         for dato in prov:
             datosProvincia.append(dato)
-        
-        
+    
+    for j in range(51, 53):
+        urlProvincia = url + "?p=" + str(j) + "&w=t"
+        ciudad = get_ciudad_autonoma(urlProvincia)
+        datosPredic = get_prediccion_municipio(ciudad[2], ciudad[0], ciudad[1])
+        for dato in datosPredic:
+            datosProvincia.append(dato)
+           
     return datosProvincia
-    #Añadir a ceuta y melilla
 
 
 # Obtenemos el nombre y la url de cada provincia
@@ -45,6 +51,18 @@ def get_municipios(url):
         dataMunicipios.append([municipio[0].text.strip(), provincia ,urlMunicipio[len(urlMunicipio) - 1]])
         
     return dataMunicipios
+
+def get_ciudad_autonoma(url):
+    soup = download_html(url)
+    prvoincia_h2 = soup.find_all("h2", class_="titulo")[0].text.strip()
+    provincia = prvoincia_h2.split(".", 2)[1].strip()
+    print(provincia)
+    print("Ciudad Autónoma")
+    print("URL: " + url)
+    datosCiudad = [provincia, provincia, url]
+
+    return datosCiudad
+    
 
 #Obtenemos los datos de los municipios por provincia
 def get_datos_provincia(dataMunicipios):
@@ -174,6 +192,7 @@ print("Inicio del proceso")
 data = get_provincias(url)
 
 print("Datos obtenidos")
+print("Escribiendo los datos en el fichero")
 
 write_csv(dataset_file, data)
 
