@@ -190,7 +190,7 @@ class Scraper():
 
     #Método que realiza la escritura en el fichero
     def write_csv(self, filename, data):
-        file = open(filename, "w+")
+        file = open("../CSV/" + filename, "w+")
         file.write("Municipio;Provincia;Día;Horario;Tiempo;Temperatura;Probabilidad precipitación; Cota de nieve; Temperatura mínima; Temperatura máxima; Sensación térmica mínima; Sensación térmica máxima; Humedad mínima; Humedad máxima; Dirección del viento; Velocidad del viento; Racha máxima de viento;")
         file.write("\n")
         for i in range(len(data)):
