@@ -13,11 +13,11 @@ Este proyecto es parte de una Práctica de la asignatura Tipología y ciclo de v
 
 ## Ficheros
 
-* dataset.csv - El dataset generado.
-* TYCVD_PRA1.pdf -Archivo PDF donde se responde a las preguntas de la práctica.
-* main.py -  Inicia y realiza todo el proceso de *scraping*.
-* DiaHoraMunicipio.py - Conforma cada uno de los objetos con los datos del tiempo de cada municipio, día y hora.
-* Scraper.py - Se encarga de obtener para cada provincia, los municipios que la componen y los datos climatológicos de cada uno de ellos.
+* **CSV/dataset.csv** - El dataset generado.
+* **PDF/TYCVD_PRA1.pdf** -Archivo PDF donde se responde a las preguntas de la práctica.
+* **code/main.py** -  Inicia y realiza todo el proceso de *scraping*.
+* **code/DiaHoraMunicipio.py** - Conforma cada uno de los objetos con los datos del tiempo de cada municipio, día y hora.
+* **code/Scraper.py** - Se encarga de obtener para cada provincia, los municipios que la componen y los datos climatológicos de cada uno de ellos.
 
 ## Bibliografía
 
