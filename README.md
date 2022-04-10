@@ -12,8 +12,8 @@ Este proyecto es parte de una Práctica de la asignatura Tipología y ciclo de v
 ## Archivos
 
 * main.py. Inicia y realiza todo el proceso de *scraping*.
-* Respuestas.pdf. Archivo PDF donde se responde a las preguntas de la práctica.
-* eltiempo.csv. El dataset generado.
+* TYCVD_PRA1.pdf. Archivo PDF donde se responde a las preguntas de la práctica.
+* dataset.csv. El dataset generado.
 
 
 
