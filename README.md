@@ -9,25 +9,18 @@ Este proyecto es parte de una Práctica de la asignatura Tipología y ciclo de v
 * Jorge Alonso Hernández
 * Inés Vidal Sospedra
 
-## Archivos
+## Ficheros
 
-* main.py. Inicia y realiza todo el proceso de *scraping*.
-* TYCVD_PRA1.pdf. Archivo PDF donde se responde a las preguntas de la práctica.
-* dataset.csv. El dataset generado.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+──── Práctica 1: Web scraping
+    │
+    ├───dataset
+    │       *dataset.csv* - El dataset generado.
+    │
+    ├───pdf
+    │       *TYCVD_PRA1.pdf* -Archivo PDF donde se responde a las preguntas
+    │       de la práctica.
+    │
+    └───code
+            *main.py* -  Inicia y realiza todo el proceso de *scraping*.
+            *DiaHoraMunicipio.py* - Conforma cada uno de los objetos con los              datos del tiempo de cada municipio, día y hora.
+            *Scraper.py* - Se encarga de obtener para cada provincia, los                  municipios que la componen y los datos climatológicos de cada                uno de ellos.
